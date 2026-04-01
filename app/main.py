@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.core.logging_config import setup_logging
-from app.routers import health
+from app.routers import health, auth
 
 # Setup logging
 setup_logging()
@@ -24,6 +24,7 @@ if settings.BACKEND_CORS_ORIGINS:
 
 # Include routers
 app.include_router(health.router, tags=["health"])
+app.include_router(auth.router, prefix=f"{settings.API_V1_STR}/auth", tags=["auth"])
 
 @app.get("/")
 def root():
