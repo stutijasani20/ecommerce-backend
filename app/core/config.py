@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     # 60 * 24 * 8 = 8 days
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8
     SECRET_KEY: str = "secret-key-for-jwt"
+    ALGORITHM: str = "HS256"
 
     # CORS
     BACKEND_CORS_ORIGINS: List[AnyHttpUrl] = []
