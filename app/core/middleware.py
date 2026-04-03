@@ -15,7 +15,13 @@ class ResponseWrapperMiddleware(BaseHTTPMiddleware):
         path = request.url.path
         if any(
             path.startswith(p)
-            for p in ["/docs", "/redoc", f"{settings.API_V1_STR}/openapi.json", "/openapi.json"]
+            for p in [
+                "/docs", 
+                "/redoc", 
+                f"{settings.API_V1_STR}/openapi.json", 
+                "/openapi.json",
+                f"{settings.API_V1_STR}/auth/login"
+            ]
         ) or path == "/health":
             return await call_next(request)
 

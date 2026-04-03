@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.core.logging_config import setup_logging
-from app.routers import health, auth, users
+from app.routers import health, auth, users, products
 from app.core.exceptions import setup_exception_handlers
 from app.core.middleware import ResponseWrapperMiddleware
 
@@ -34,6 +34,7 @@ if settings.BACKEND_CORS_ORIGINS:
 app.include_router(health.router, tags=["health"])
 app.include_router(auth.router, prefix=f"{settings.API_V1_STR}/auth", tags=["auth"])
 app.include_router(users.router, prefix=f"{settings.API_V1_STR}/users", tags=["users"])
+app.include_router(products.router, prefix=f"{settings.API_V1_STR}/products", tags=["products"])
 
 @app.get("/")
 def root():
