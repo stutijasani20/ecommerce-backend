@@ -9,6 +9,8 @@ from app.models.order import Order, OrderItem, OrderStatus
 from app.models.product import Product
 from app.models.cart import CartItem
 from app.services import cart as cart_service
+from app.services import tracking as tracking_service
+from app.services import email as email_service
 
 
 async def create_order_from_cart(db: AsyncSession, user_id: UUID) -> Order:
@@ -111,6 +113,30 @@ async def handle_order_payment_success(db: AsyncSession, order_id: UUID) -> Orde
     
     # Clear cart
     await cart_service.clear_cart(db, user_id=order.user_id)
+    
+    # Initialize tracking timeline
+    await tracking_service.create_tracking_entry(
+        db, order_id=order.id, status=OrderStatus.PAID, description="Payment confirmed. Order is being processed."
+    )
+    
+    # Reload order with items and user for email
+    result = await db.execute(
+        select(Order)
+        .filter(Order.id == order_id)
+        .options(
+            selectinload(Order.items).selectinload(OrderItem.product),
+            selectinload(Order.user)
+        )
+    )
+    order_full = result.scalar_one()
+    
+    # Send Notification Emails (Don't let email failure block order completion)
+    try:
+        await email_service.send_order_confirmation_email(order_full, order_full.user)
+        await email_service.send_new_order_admin_alert(order_full, order_full.user)
+    except Exception as e:
+        # In a real app, you might want to log this or retry
+        pass
     
     await db.commit()
     await db.refresh(order)

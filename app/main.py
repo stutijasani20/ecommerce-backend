@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.core.logging_config import setup_logging
-from app.routers import health, auth, users, products, cart, orders, webhooks
+from app.routers import health, auth, users, products, cart, orders, webhooks, tracking
 from app.core.exceptions import setup_exception_handlers
 from app.core.middleware import ResponseWrapperMiddleware
 
@@ -38,6 +38,7 @@ app.include_router(products.router, prefix=f"{settings.API_V1_STR}/products", ta
 app.include_router(cart.router, prefix=f"{settings.API_V1_STR}/cart", tags=["cart"])
 app.include_router(orders.router, prefix=f"{settings.API_V1_STR}/orders", tags=["orders"])
 app.include_router(webhooks.router, prefix=f"{settings.API_V1_STR}/webhooks", tags=["webhooks"])
+app.include_router(tracking.router, prefix=f"{settings.API_V1_STR}", tags=["tracking"])
 
 @app.get("/")
 def root():
