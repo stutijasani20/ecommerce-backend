@@ -13,5 +13,6 @@ class Product(Base):
     price = Column(Float, nullable=False)
     bulk_price = Column(Float)
     stock = Column(Integer, default=0)
+    reserved_stock = Column(Integer, default=0)
     image_url = Column(String)
     created_at = Column(DateTime(timezone=True), server_default=func.now())

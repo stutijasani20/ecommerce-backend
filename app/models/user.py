@@ -1,4 +1,5 @@
 from sqlalchemy import Boolean, Column, String, DateTime, func
+from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import UUID
 import uuid
 from app.db.database import Base
@@ -12,3 +13,5 @@ class User(Base):
     is_active = Column(Boolean(), default=True)
     is_admin = Column(Boolean(), default=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    cart_items = relationship("CartItem", back_populates="user", cascade="all, delete-orphan")

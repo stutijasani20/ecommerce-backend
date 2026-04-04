@@ -46,6 +46,12 @@ class Settings(BaseSettings):
             path=f"{info.data.get('POSTGRES_DB') or ''}",
         )
 
+    # Stripe
+    STRIPE_API_KEY: str = "sk_test_..."
+    STRIPE_WEBHOOK_SECRET: str = "whsec_..."
+    STRIPE_SUCCESS_URL: str = "http://localhost:3000/checkout/success?session_id={CHECKOUT_SESSION_ID}"
+    STRIPE_CANCEL_URL: str = "http://localhost:3000/checkout/cancel"
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
