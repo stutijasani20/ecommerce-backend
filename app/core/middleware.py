@@ -8,6 +8,16 @@ from starlette.responses import JSONResponse
 from app.core.config import settings
 from app.schemas.response import SuccessResponse
 
+_DEFAULT_MESSAGES = {
+    ("GET",    200): "Fetched successfully",
+    ("POST",   200): "Created successfully",
+    ("POST",   201): "Created successfully",
+    ("PUT",    200): "Updated successfully",
+    ("PATCH",  200): "Updated successfully",
+    ("DELETE", 200): "Deleted successfully",
+    ("DELETE", 204): "Deleted successfully",
+}
+
 
 class ResponseWrapperMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next: Callable) -> Response:
@@ -47,21 +57,26 @@ class ResponseWrapperMiddleware(BaseHTTPMiddleware):
                     response.body_iterator = body_iterator()
                     return response
 
+                # Determine message: endpoint-supplied header takes priority,
+                # otherwise fall back to method-based default.
+                headers = dict(response.headers)
+                message = headers.pop("x-response-message", None) or \
+                    _DEFAULT_MESSAGES.get((request.method, response.status_code))
+
                 # Wrap the data in SuccessResponse
                 wrapped_response = SuccessResponse(
                     success=True,
-                    data=data
+                    message=message,
+                    data=data,
                 )
-                
-                # Create a new JSONResponse with the wrapped content
-                # Remove content-length to let JSONResponse calculate it correctly
-                headers = dict(response.headers)
+
+                # Remove content-length to let JSONResponse recalculate it
                 headers.pop("content-length", None)
-                
+
                 return JSONResponse(
                     content=wrapped_response.model_dump(),
                     status_code=response.status_code,
-                    headers=headers
+                    headers=headers,
                 )
             except Exception as e:
                 # If something fails, try to restore the body and return original

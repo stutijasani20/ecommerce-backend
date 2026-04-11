@@ -63,6 +63,11 @@ class Settings(BaseSettings):
     EMAILS_FROM_NAME: str = "Ecommerce Admin"
     ADMIN_EMAIL: str = "admin@example.com"
 
+    # Cloudinary
+    CLOUDINARY_CLOUD_NAME: str = ""
+    CLOUDINARY_API_KEY: str = ""
+    CLOUDINARY_API_SECRET: str = ""
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",

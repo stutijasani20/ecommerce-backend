@@ -10,5 +10,4 @@ def setup_logging():
         ]
     )
     # Reducing log noise from third-party libraries
-    logging.getLogger("uvicorn.access").setLevel(logging.WARNING)
     logging.getLogger("sqlalchemy.engine").setLevel(logging.WARNING)
