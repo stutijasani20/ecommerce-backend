@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.core.logging_config import setup_logging
-from app.routers import health, auth, users, products, cart, orders, webhooks, tracking
+from app.routers import health, auth, users, products, cart, orders, webhooks, tracking, uploads
 from app.core.exceptions import setup_exception_handlers
 from app.core.middleware import ResponseWrapperMiddleware
 
@@ -24,7 +24,7 @@ app.add_middleware(ResponseWrapperMiddleware)
 if settings.BACKEND_CORS_ORIGINS:
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=[str(origin) for origin in settings.BACKEND_CORS_ORIGINS],
+        allow_origins=[str(origin).rstrip("/") for origin in settings.BACKEND_CORS_ORIGINS],
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
@@ -39,6 +39,7 @@ app.include_router(cart.router, prefix=f"{settings.API_V1_STR}/cart", tags=["car
 app.include_router(orders.router, prefix=f"{settings.API_V1_STR}/orders", tags=["orders"])
 app.include_router(webhooks.router, prefix=f"{settings.API_V1_STR}/webhooks", tags=["webhooks"])
 app.include_router(tracking.router, prefix=f"{settings.API_V1_STR}", tags=["tracking"])
+app.include_router(uploads.router, prefix=f"{settings.API_V1_STR}/upload", tags=["uploads"])
 
 @app.get("/")
 def root():
